@@ -1,0 +1,5 @@
+name=SwiftBreak
+author=Rauhul Varma
+description=A brick breaker game in pure Swift
+bundleID=org.swift.swift-break
+imagePath=

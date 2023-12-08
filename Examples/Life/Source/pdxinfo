@@ -1,0 +1,5 @@
+name=Life
+author=Rauhul Varma
+description=Example Playdate game in pure Swift
+bundleID=org.swift.swift-life
+imagePath=

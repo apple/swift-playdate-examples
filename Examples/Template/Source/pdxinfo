@@ -1,0 +1,5 @@
+name={{Game's name}}
+author={{Your name}}
+description={{A short description of the game}}
+bundleID={{A reverse dns-style id, e.g. com.<your-name>.<game-name>}}
+imagePath=
