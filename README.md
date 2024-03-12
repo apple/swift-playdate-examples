@@ -14,6 +14,11 @@ Embedded Swift solves this problem by pairing high-level ergonomics with low-lev
 
 To start using Swift with the Playdate SDK, you can find guides, articles, and API documentation via the [Package's documentation on the Web][docs] or in Xcode.
 
+- [Exploring the Examples](https://github.com/apple/swift-playdate-examples/wiki/Exploring-the-Examples)
+- [Downloading the Tools](https://github.com/apple/swift-playdate-examples/wiki/Downloading-the-Tools)
+- [Building the Examples](https://github.com/apple/swift-playdate-examples/wiki/Building-the-Examples)
+- [Creating Your Own Game](https://github.com/apple/swift-playdate-examples/wiki/Creating-Your-Own-Game)
+
 > Disclaimer: The examples included in this repository are not reference implementations for creating games.
 
 [docs]: https://github.com/apple/swift-playdate-examples/wiki
