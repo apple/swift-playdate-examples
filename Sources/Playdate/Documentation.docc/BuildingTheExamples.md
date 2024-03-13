@@ -103,9 +103,9 @@ Select the Run icon in the toolbar or press Cmd+R on your keyboard to start a bu
 
 ## Determining the toolchain
 
-When using `make` to build the examples, `swift.mk` will automatically detect the latest installed Swift toolchain. It may, however, sometimes be useful to specify a specific toolchain version. It is necessary to define the toolchain when building with swift package manager in terminal.
+When using `make` to build the examples, the latest installed Swift toolchain will be automatically determined. It may, however, sometimes be useful to specify a specific toolchain version. It is always necessary to define the toolchain when building with swift package manager in terminal.
 
-> Note: When using `make`, `swift.mk` will prioritize Swift toolchains installed for the current _user_ over toolchains installed for _all_ users.
+> Note: When using `make` to build the examples, Swift toolchains installed for the current user take precedence over globally installed toolchains.
 
 1. The toolchain identifier can be found under the `CFBundleIdentifier` key in the `Info.plist` file found at the root of the toolchain.
 
@@ -122,6 +122,11 @@ org.swift.59202312211a
 > $ plutil -extract CFBundleIdentifier raw -o - ~/Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
 > org.swift.59202312211a
 > ```
+> 
+> Or use a single command to determine the identifier of the latest toolchain(s) in case you have both local as well as global installations:
+> ```console
+> $ find ~/Library/Developer/Toolchains /Library/Developer/Toolchains -name "swift-latest.xctoolchain" -depth 1 -exec plutil -extract CFBundleIdentifier raw -o - {}/Info.plist \; 2>/dev/null|sort
+>```
 
 2. Set `TOOLCHAINS` as an environment variable when building with `make` or `swift build`, but this will not work when building with a graphical editor.
 
