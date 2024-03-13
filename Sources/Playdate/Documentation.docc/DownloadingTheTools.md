@@ -18,6 +18,24 @@ To build games for the Playdate, you will need to download a Swift toolchain and
 4. You should see the following window if the Swift nightly toolchain was installed successfully: 
 @Image(source: "swift-installation-successful", alt: "A screenshot of the Swift nightly toolchain package installer success screen.")
 
+5. The installed Swift Toolchain can be found under `/Library/Developer/Toolchains` when **Install for all users on this computer** was selected, or under `$HOME/Library/Developer/Toolchains` when **Install for me only** was selected.
+
+```console
+$ find /Library/Developer/Toolchains ~/Library/Developer/Toolchains -depth 1 -print 2>/dev/null
+```
+
+> Note: You can retrieve the toolchain's identifier by running either the following command in your terminal depending on whether  **Install for all users on this computer** or **Install for me only** was selected:
+>
+> ```console
+> $ plutil -extract CFBundleIdentifier raw -o - /Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
+> org.swift.59202312211a
+> ```
+>
+> ```console
+> $ plutil -extract CFBundleIdentifier raw -o - ~/Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
+> org.swift.59202312211a
+> ```
+
 ## Download and install the Playdate SDK
  
 1. Navigate to the Play.date > Dev [page](https://play.date/dev/) using your preferred browser.
@@ -42,9 +60,9 @@ Designing for Playdate      Examples                    Inside Playdate.html    
 ```
 @Image(source: "playdate-sdk-content", alt: "A screenshot of a Terminal application showing the result of the ls command.")
 
-## Clone and configure the Swift Playdate package
+## Clone the Swift Playdate package
 
-1. Clone this repository from GitHub to your local machine, using a Git client or the `git` command-line tool.
+Clone this repository from GitHub to your local machine, using a Git client or the `git` command-line tool.
 
 ```console
 $ git clone https://github.com/apple/swift-playdate-examples.git
@@ -55,34 +73,4 @@ remote: Compressing objects: 100% (146/146), done.
 remote: Total 654 (delta 188), reused 214 (delta 128), pack-reused 342
 Receiving objects: 100% (654/654), 7.71 MiB | 400.00 KiB/s, done.
 Resolving deltas: 100% (269/269), done.
-$ cd swift-playdate-examples/
 ```
-
-2. Find the name of your downloaded Swift toolchain. The toolchain name can be found under the `CFBundleIdentifier` key in the `Info.plist` file found at the root of the toolchain.
-
-  You can retrieve the toolchain's name by running the following command in your terminal:
-  ```console
-  $ plutil -extract CFBundleIdentifier raw -o - /Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
-  org.swift.59202312211a
-  ```
-
-  @Image(source: "swift-toolchain-version", alt: "A screenshot of a Terminal application showing the result of the plutil command.")
-
-3. Specify your toolchain name in the `Example/swift.mk` file. Edit `swift.mk` in the `Examples` directory to set `TOOLCHAINS := "<your Swift nightly toolchain name>"` before the `TOOLCHAINS` check. The following example diff uses the name `"org.swift.59202312211a"`.
-
-```diff
-diff --git a/Examples/swift.mk b/Examples/swift.mk
-index e933a3a..c546c8f 100644
---- a/Examples/swift.mk
-+++ b/Examples/swift.mk
-@@ -13,6 +13,7 @@ endif
-
- include $(SDK)/C_API/buildsupport/common.mk
-
-+TOOLCHAINS := "org.swift.59202312211a"
- ifeq ($(TOOLCHAINS),)
- $(error Swift nightly toolchain not found; set ENV value TOOLCHAINS)
- endif
-```
-
-> Note: You can alternatively set `TOOLCHAINS` as an environment variable instead of editing `swift.mk` when building with `make` or `swift build`, but this will not work when building with a graphical editor.

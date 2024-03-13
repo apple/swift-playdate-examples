@@ -1,10 +1,11 @@
 *.elf
 *.pdx
+*.dylib
 .DS_Store
 .netrc
 .swiftpm/configuration/registries.json
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
-/.build
+.build
 /Packages
 build
 DerivedData/
