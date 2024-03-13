@@ -1,0 +1,38 @@
+name: SwiftPM Build CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  swiftpm_macos_test:
+    name: Build with SwiftPM on macOS
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-13, macos-14]
+        xcode-version: ["15.2"]
+        target: ["Life", "SwiftBreak"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ matrix.xcode-version }}
+      - uses: SwiftyLab/setup-swift@latest
+        with:
+          development: true
+          swift-version: latest
+          check-latest: true
+      - name: Install Playdate SDK
+        id: playdate
+        uses: pd-rs/get-playdate-sdk@0.1.6
+        with:
+          version: 2.4.1
+      - name: Build with SwiftPM for ${{ matrix.TARGET }}
+        working-directory: Examples/${{ matrix.TARGET }}
+        run: |
+          swift build -c release
