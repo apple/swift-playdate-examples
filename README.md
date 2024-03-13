@@ -8,7 +8,7 @@ The [Playdate](https://play.date) is a tiny handheld gaming console developed by
 
 Most Playdate games are traditionally written in Lua for ease of development, but can run into performance problems that necessitate the added complexity of using C.
 
-Embedded Swift solves this problem by pairing high-level ergonomics with low-level performance, while also providing memory safety guarantees which improve productivity and eliminate a common sources of bugs. 
+Embedded Swift solves this problem by pairing high-level ergonomics with low-level performance, while also providing memory safety guarantees which improve productivity and eliminate a common source of bugs. 
 
 ## Getting Started
 
