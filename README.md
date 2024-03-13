@@ -14,14 +14,14 @@ Embedded Swift solves this problem by pairing high-level ergonomics with low-lev
 
 To start using Swift with the Playdate SDK, you can find guides, articles, and API documentation via the [Package's documentation on the Web][docs] or in Xcode.
 
-- [Exploring the Examples](https://github.com/apple/swift-playdate-examples/wiki/Exploring-the-Examples)
-- [Downloading the Tools](https://github.com/apple/swift-playdate-examples/wiki/Downloading-the-Tools)
-- [Building the Examples](https://github.com/apple/swift-playdate-examples/wiki/Building-the-Examples)
-- [Creating Your Own Game](https://github.com/apple/swift-playdate-examples/wiki/Creating-Your-Own-Game)
+- [Exploring the Examples](https://apple.github.io/swift-playdate-examples/documentation/playdate/exploringtheexamples)
+- [Downloading the Tools](https://apple.github.io/swift-playdate-examples/documentation/playdate/downloadingthetools)
+- [Building the Examples](https://apple.github.io/swift-playdate-examples/documentation/playdate/buildingtheexamples)
+- [Creating Your Own Game](https://apple.github.io/swift-playdate-examples/documentation/playdate/creatingyourowngame)
 
 > Disclaimer: The examples included in this repository are not reference implementations for creating games.
 
-[docs]: https://github.com/apple/swift-playdate-examples/wiki
+[docs]: https://apple.github.io/swift-playdate-examples/documentation/playdate
 
 ## Contributing to Swift Playdate Examples
 
@@ -35,6 +35,6 @@ Like all Swift.org projects, we would like the Swift Playdate Examples project t
 
 ### Contact information
 
-The current code owner of this package is Rauhul Varma ([@rauhul](https://github.com/rauhul)). You can contact him [on the Swift forums](https://orums.swift.org/u/rauhul/summary).
+The current code owner of this package is Rauhul Varma ([@rauhul](https://github.com/rauhul)). You can contact him [on the Swift forums](https://forums.swift.org/u/rauhul/summary).
 
 In case of moderation issues, you can also directly contact a member of the [Swift Core Team](https://swift.org/community/#community-structure).
