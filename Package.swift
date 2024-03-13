@@ -48,4 +48,5 @@ let package = Package(
     .target(
       name: "CPlaydate",
       cSettings: cSettingsSimulator),
-  ])
+  ],
+  swiftLanguageVersions: [.version("6"), .v5])

@@ -39,4 +39,5 @@ let package = Package(
         .product(name: "CPlaydate", package: "swift-playdate-examples")
       ],
       swiftSettings: swiftSettingsSimulator)
-  ])
+  ],
+  swiftLanguageVersions: [.version("6"), .v5])
