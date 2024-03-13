@@ -75,6 +75,9 @@ After a successful build, the `.build/release` directory will contain object fil
 
 ### Build with Xcode
 
+> IMPORTANT:
+> Xcode 15.3+ is required to run the examples in Xcode.
+
 Open an example's `Package.swift` with Xcode via the command line or the Xcode graphical interface.
 
 ```console
@@ -88,4 +91,5 @@ Select your Swift nightly toolchain from the Xcode > Toolchains menu item.
 
 Select the Run icon in the toolbar or press Cmd+R on your keyboard to start a build. This will first build the example for the host machine using `xcbuild`. After a successful initial build, Xcode will automatically build again with `make` then open the Simulator with the newly built game.
 
-> Note: Learn more about [Xcode](https://developer.apple.com/xcode/)
+> Note:
+> Learn more about [Xcode](https://developer.apple.com/xcode/)
