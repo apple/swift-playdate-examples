@@ -109,33 +109,34 @@ When using `make` to build the examples, the latest installed Swift toolchain wi
 
 1. The toolchain identifier can be found under the `CFBundleIdentifier` key in the `Info.plist` file found at the root of the toolchain.
 
-You can retrieve the toolchain's identifier by running the following command in your terminal:
+   If you selected **Install for all users on this computer** when installing the toolchain, you can retrieve the toolchain's identifier by running the following command in your terminal:
 ```console
 $ plutil -extract CFBundleIdentifier raw -o - /Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
 org.swift.59202312211a
 ```
 
+   If you instead selected **Install for me only**, you can retrieve the toolchain's identifier by running the following command in your terminal:
+```console
+$ plutil -extract CFBundleIdentifier raw -o - ~/Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
+org.swift.59202312211a
+```
+
 @Image(source: "swift-toolchain-version", alt: "A screenshot of a Terminal application showing the result of the plutil command.")
 
-> Note: If you selected **Install for me only** rather than **Install for all users on this computer**, you can retrieve the toolchain's identifier by running the following command in your terminal:
-> ```console
-> $ plutil -extract CFBundleIdentifier raw -o - ~/Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
-> org.swift.59202312211a
-> ```
-> 
-> Or use a single command to determine the identifier of the latest toolchain(s) in case you have both local as well as global installations:
-> ```console
-> $ find ~/Library/Developer/Toolchains /Library/Developer/Toolchains -name "swift-latest.xctoolchain" -depth 1 -exec plutil -extract CFBundleIdentifier raw -o - {}/Info.plist \; 2>/dev/null|sort
->```
+2. In case you have both local as well as globally installed toolchains, you can use a single command to determine the identifier of the latest toolchain(s):
 
-2. Set `TOOLCHAINS` as an environment variable when building with `make` or `swift build`, but this will not work when building with a graphical editor.
+```console
+$ find ~/Library/Developer/Toolchains /Library/Developer/Toolchains -name "swift-latest.xctoolchain" -depth 1 -exec plutil -extract CFBundleIdentifier raw -o - {}/Info.plist \; 2>/dev/null|sort
+```
+
+3. Set `TOOLCHAINS` as an environment variable when building with `make` or `swift build`. This will not work when building with a graphical editor.
 
 ```console
 $ TOOLCHAINS=org.swift.59202403121a make
 ```
 
 ```console
-$ TOOLCHAINS="org.swift.59202312211a" swift build -c release
+$ TOOLCHAINS=org.swift.59202312211a swift build -c release
 ```
 
 > Note: You can alternatively specify your toolchain name in the `Examples/swift.mk` file. Edit `swift.mk` in the `Examples` directory to set `TOOLCHAINS := "<your Swift nightly toolchain name>"` before the `TOOLCHAINS` check. The following example diff uses the name `"org.swift.59202312211a"`.
@@ -150,9 +151,3 @@ $ TOOLCHAINS="org.swift.59202312211a" swift build -c release
 >STACK_SIZE     = 61800
 >+TOOLCHAINS := "org.swift.59202312211a"
 >```
-
-# Locate the Playdate SDK
-
-```console
-SDK = ${PLAYDATE_SDK_PATH}
-```

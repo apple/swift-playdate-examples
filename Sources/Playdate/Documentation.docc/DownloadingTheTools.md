@@ -18,23 +18,15 @@ To build games for the Playdate, you will need to download a Swift toolchain and
 4. You should see the following window if the Swift nightly toolchain was installed successfully: 
 @Image(source: "swift-installation-successful", alt: "A screenshot of the Swift nightly toolchain package installer success screen.")
 
-5. The installed Swift Toolchain can be found under `/Library/Developer/Toolchains` when **Install for all users on this computer** was selected, or under `$HOME/Library/Developer/Toolchains` when **Install for me only** was selected.
+5. The installed Swift Toolchain can be found under `/Library/Developer/Toolchains` when **Install for all users on this computer** was selected, or under `$HOME/Library/Developer/Toolchains` if **Install for me only** was selected.
+    
+    You can find all installed toolchains in both directories with the following command:
 
 ```console
 $ find /Library/Developer/Toolchains ~/Library/Developer/Toolchains -depth 1 -print 2>/dev/null
 ```
 
-> Note: You can retrieve the toolchain's identifier by running either the following command in your terminal depending on whether  **Install for all users on this computer** or **Install for me only** was selected:
->
-> ```console
-> $ plutil -extract CFBundleIdentifier raw -o - /Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
-> org.swift.59202312211a
-> ```
->
-> ```console
-> $ plutil -extract CFBundleIdentifier raw -o - ~/Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
-> org.swift.59202312211a
-> ```
+> Note: Refer to <doc:BuildingTheExamples#Determining-the-toolchain> for details on how to obtain the Swift toolchain's identifier.
 
 ## Download and install the Playdate SDK
  
