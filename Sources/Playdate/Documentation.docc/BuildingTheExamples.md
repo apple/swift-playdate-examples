@@ -14,7 +14,7 @@ The examples' Makefiles depend on two supporting Makefiles for common logic. The
 > - `common.mk: $HOME/Developer/PlaydateSDK/C_API/buildsupport/common.mk`
 > - `swift.mk: $REPO_ROOT/Examples/swift.mk`
 
-### Build with Make
+## Build with Make
 
 To build an example with make, enter the example's directory and run `make`.
 
@@ -36,9 +36,39 @@ $ $HOME/Developer/PlaydateSDK/bin/Playdate\ Simulator.app/Contents/MacOS/Playdat
 
 > Note: Learn more about [`make`](https://man.freebsd.org/cgi/man.cgi?make(1))
 
-### Build with Nova
+## Build with Nova
 
-> Prerequisites: Install Nova, the Playdate extension, and the Icarus extension.
+Prerequisites: Install Nova, the Playdate extension, and the Icarus extension.
+
+### Configure the Icarus extension
+
+Configure the Icarus Swift language support extension to use a Swift nightly toolchain. See <doc:DownloadingTheTools> for instructions on how to install a nightly toolchain.
+
+Use the Menu bar to navigate to the extension library Extension > Extension Library or press Cmd+Shift+2. Select the Icarus extension, then select the Settings panel. Finally, select the "Toolchain: Custom" option and provide a full path to your nightly toolchain in the "Custom Toolchain Path" field.
+
+@Image(source: "nova-icarus-configuration", alt: "A screenshot of the Icarus extension settings in Nova with \"Custom\" selected.")
+
+> Note: This path should end in `.xctoolchain`.
+
+### Make the Playdate module available
+
+Icarus uses the `Playdate.swiftmodule` built by SwiftPM to drive autocomplete and other editor integration. In order for this to work properly, you must first manually perform a release build in the example directory.
+
+```console
+$ cd $REPO_ROOT/Example/Life
+$ TOOLCHAINS="org.swift.59202312211a" swift build -c release
+```
+
+Lastly, we need to create a debug symlink the release build directory.
+
+```console
+$ cd $REPO_ROOT/Example/Life/.build/arm64-apple-macosx
+$ ln -s release debug
+```
+
+> Why is this needed? By default SourceKit-LSP looks for a debug build, but can be configured to use a release build. Unfortunately, Icarus does not yet allow us to pass custom SourceKit-LSP options, so we trick SourceKit-LSP into working by pretending our release build is a debug build.
+
+### Perform a Build
 
 The examples included in this repository have been preconfigured with Panic's Playdate extension for Nova found under each example's `.nova` directory.
 
@@ -48,9 +78,32 @@ Open an example directory with Nova and select the Run icon in the toolbar or pr
 
 > Note: Learn more about [Nova](https://nova.app)
 
-### Build with VSCode
+## Build with VSCode
 
-> Prerequisites: Install VSCode and the Swift extension.
+Prerequisites: Install VSCode and the Swift extension.
+
+### Configure the Swift extension
+
+Configure the VSCode Swift extension to use a Swift nightly toolchain. See <doc:DownloadingTheTools> for instructions on how to install a nightly toolchain.
+
+Under the Swift Settings, select the "Swift: Path" option and provide a full path to the `usr/bin` folder inside your nightly toolchain.
+
+@Image(source: "vscode-swift-path-configuration", alt: "A screenshot of VSCode Swift extension with the \"Swift: Path\" option set to \"/Library/Developer/Toolchains/swift-DEVELOPMENT-SNAPSHOT-2024-03-07-a.xctoolchain/usr/bin\".")
+
+Under the Swift Settings, select the "Swift > Sourcekit-LSP: Server Arguments" option and pass the arguments `['--configuration', 'release']`.
+
+@Image(source: "vscode-sourcekit-lsp-configuration", alt: "A screenshot of VSCode Swift extension with the \"Swift > Sourcekit-LSP: Server Arguments\" option set to \"['--configuration', 'release']\".")
+
+### Make the Playdate module available
+
+The Swift extension uses the `Playdate.swiftmodule` built by SwiftPM to drive autocomplete and other editor integration. In order for this to work properly, you must first manually perform a release build in the example directory.
+
+```console
+$ cd $REPO_ROOT/Example/Life
+$ TOOLCHAINS="org.swift.59202312211a" swift build -c release
+```
+
+### Perform a Build
 
 The examples included in this repository have been preconfigured with VSCode `tasks.json` files found under each example's `.vscode` directory.
 
@@ -60,7 +113,7 @@ Open an example directory with VSCode and select the Terminal > Run Build Task m
 
 > Note: Learn more about [VSCode](https://code.visualstudio.com)
 
-### Build with Swift Package Manager
+## Build with Swift Package Manager
 
 To build an example with swift package manager, enter the example’s directory, set the TOOLCHAINS environment variable to the name of your Swift nightly toolchain, and run `swift build` in release mode.
 
@@ -73,10 +126,9 @@ After a successful build, the `.build/release` directory will contain object fil
 
 > Note: Learn more about [Swift Package Manager](https://www.swift.org/package-manager/)
 
-### Build with Xcode
+## Build with Xcode
 
-> IMPORTANT:
-> Xcode 15.3+ is required to run the examples in Xcode.
+> Important: Xcode 15.3+ is required to run the examples in Xcode.
 
 Open an example's `Package.swift` with Xcode via the command line or the Xcode graphical interface.
 
@@ -85,11 +137,14 @@ $ cd Examples/Life
 $ open Package.swift
 ```
 
+### Configure the Toolchain
+
 Select your Swift nightly toolchain from the Xcode > Toolchains menu item.
 
 @Image(source: "xcode-toolchain-selection", alt: "A screenshot of the Xcode toolchain selection menu with a recent Swift nightly toolchain selected and highlighted.")
 
+### Perform a Build
+
 Select the Run icon in the toolbar or press Cmd+R on your keyboard to start a build. This will first build the example for the host machine using `xcbuild`. After a successful initial build, Xcode will automatically build again with `make` then open the Simulator with the newly built game.
 
-> Note:
-> Learn more about [Xcode](https://developer.apple.com/xcode/)
+> Note: Learn more about [Xcode](https://developer.apple.com/xcode/)
