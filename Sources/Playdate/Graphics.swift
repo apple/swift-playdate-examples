@@ -164,9 +164,9 @@ extension Graphics {
 
   /// Returns a new, rotated and scaled LCDBitmap based on the given bitmap.
   public static func rotatedBitmap(bitmap: OpaquePointer, rotation: Float, xscale: Float, yscale: Float) -> (OpaquePointer?, Int32) {
-    var allocedSize: Int32 = 0
-    let result = graphicsAPI.rotatedBitmap.unsafelyUnwrapped(bitmap, rotation, xscale, yscale, &allocedSize)
-    return (result, allocedSize)
+    var allocatedSize: Int32 = 0
+    let result = graphicsAPI.rotatedBitmap.unsafelyUnwrapped(bitmap, rotation, xscale, yscale, &allocatedSize)
+    return (result, allocatedSize)
   }
 
   /// Sets a mask image for the given bitmap. The set mask must be the same size as the target bitmap.
