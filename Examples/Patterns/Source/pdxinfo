@@ -1,0 +1,5 @@
+name=Patterns
+author=Helio Tejedor
+description=Example Playdate pattern colors
+bundleID=org.swift.swift-patterns
+imagePath=

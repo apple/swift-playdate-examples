@@ -145,6 +145,12 @@ extension Sprite {
     spriteAPI.getImage.unsafelyUnwrapped(self.pointer)
   }
 
+  public func withImage(_ block: () -> Void) {
+      Graphics.pushContext(target: image.unsafelyUnwrapped)
+      block()
+      Graphics.popContext()
+  }
+    
   /// Sets the size.
   ///
   /// The size is used to set the sprite’s bounds when calling `moveTo()`.
