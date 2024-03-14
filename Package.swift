@@ -1,11 +1,10 @@
 // swift-tools-version: 5.9
 
-import Foundation
 import PackageDescription
 
 let gccIncludePrefix =
   "/usr/local/playdate/gcc-arm-none-eabi-9-2019-q4-major/lib/gcc/arm-none-eabi/9.2.1"
-guard let home = ProcessInfo.processInfo.environment["HOME"] else {
+guard let home = Context.environment["HOME"] else {
   fatalError("could not determine home directory")
 }
 
