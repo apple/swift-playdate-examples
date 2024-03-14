@@ -15,10 +15,10 @@ include $(SDK)/C_API/buildsupport/common.mk
 
 # Determine the Swift toolchain by order of preference:
 #
-# 1. the pressence of a TOOLCHAINS environment value
-# 2. a Swift toolchain installed for the current user
-# 3. a Swift toolchain installed for all users
-TOOLCHAIN_PATH	= Library/Developer/Toolchains/swift-latest.xctoolchain
+# 1. the presence of a TOOLCHAINS environment value
+# 2. a Swift toolchain installed for the current user (e.g. 'Install for me only')
+# 3. a Swift toolchain installed for all users (e.g. 'Install for all users on this computer')
+TOOLCHAIN_PATH = Library/Developer/Toolchains/swift-latest.xctoolchain
 ifneq ($(TOOLCHAINS),)
 else ifneq ($(wildcard $(HOME)/$(TOOLCHAIN_PATH)),)
 TOOLCHAINS = $(shell plutil -extract CFBundleIdentifier raw -o - $(HOME)/$(TOOLCHAIN_PATH)/Info.plist)
