@@ -14,6 +14,8 @@ The examples' Makefiles depend on two supporting Makefiles for common logic. The
 > - `common.mk: $HOME/Developer/PlaydateSDK/C_API/buildsupport/common.mk`
 > - `swift.mk: $REPO_ROOT/Examples/swift.mk`
 
+See <doc:#Selecting-a-Toolchain> for details on how to obtain a Swift toolchain's identifier and build with a specific toolchain.
+
 ## Build with Make
 
 To build an example with make, enter the example's directory and run `make`.
@@ -22,12 +24,6 @@ To build an example with make, enter the example's directory and run `make`.
 $ cd $REPO_ROOT/Examples/Life
 $ make
 ```
-
-> Note: When you need to use a different Swift toolchain, set the TOOLCHAINS environment variable to the name of your Swift toolchain.
->
-> ```console
-> $ TOOLCHAINS="org.swift.59202312211a" make
-> ```
 
 After the build completes, the example directory will include a pdx file which can be run on the Playdate Simulator and device. To run the game on the simulator, launch the "Playdate Simulator.app" included in the Playdate SDK and open the game using the File > Open menu item.
 
@@ -50,7 +46,7 @@ Prerequisites: Install Nova, the Playdate extension, and the Icarus extension.
 
 Configure the Icarus Swift language support extension to use a Swift nightly toolchain. See <doc:DownloadingTheTools> for instructions on how to install a nightly toolchain.
 
-Use the Menu bar to navigate to the extension library Extension > Extension Library or press Cmd+Shift+2. Select the Icarus extension, then select the Settings panel. Finally, select the "Toolchain: Custom" option and provide a full path to your nightly toolchain in the "Custom Toolchain Path" field.
+Navigate to the extension library using the Extension > Extension Library menu bar item or press Cmd+Shift+2. Select the Icarus extension, then select the Settings panel. Finally, select the "Toolchain: Custom" option and provide a full path to your nightly toolchain in the "Custom Toolchain Path" field.
 
 @Image(source: "nova-icarus-configuration", alt: "A screenshot of the Icarus extension settings in Nova with \"Custom\" selected.")
 
@@ -155,53 +151,63 @@ Select the Run icon in the toolbar or press Cmd+R on your keyboard to start a bu
 
 > Note: Learn more about [Xcode](https://developer.apple.com/xcode/)
 
-## Determining the toolchain
+## Selecting a Toolchain
 
-When using `make` to build the examples, the latest installed Swift toolchain will be automatically determined. It may, however, sometimes be useful to specify a specific toolchain version. It is always necessary to define the toolchain when building with swift package manager in terminal.
+When using `make` to build the examples, the latest installed Swift toolchain is automatically used. However is it sometimes useful to specify a specific toolchain version and is always necessary when building with the Swift Package Manager in terminal.
 
-> Note: When using `make` to build the examples, Swift toolchains installed for the current user take precedence over globally installed toolchains.
+> Note: The Makefile automatic toolchain selection will prefer Swift toolchains installed for the current user take precedence over globally installed toolchains.
 
-1. The toolchain identifier can be found under the `CFBundleIdentifier` key in the `Info.plist` file found at the root of the toolchain.
+### Determining the Toolchain Identifier
 
-   If you selected **Install for all users on this computer** when installing the toolchain, you can retrieve the toolchain's identifier by running the following command in your terminal:
-```console
-$ plutil -extract CFBundleIdentifier raw -o - /Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
-org.swift.59202312211a
-```
+In order to select a specific toolchain to build with you will need to frist determine the toolchain's identifier.
+
+1. A toolchain's identifier can be found under the `CFBundleIdentifier` key in the `Info.plist` file in the toolchain root directory.
+
+    If you selected **Install for all users on this computer** when installing your toolchain, you can retrieve the toolchain's identifier by running the following command in your terminal:
+
+    ```console
+    $ plutil -extract CFBundleIdentifier raw -o - /Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
+    org.swift.59202312211a
+    ```
 
    If you instead selected **Install for me only**, you can retrieve the toolchain's identifier by running the following command in your terminal:
-```console
-$ plutil -extract CFBundleIdentifier raw -o - ~/Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
-org.swift.59202312211a
-```
 
-@Image(source: "swift-toolchain-version", alt: "A screenshot of a Terminal application showing the result of the plutil command.")
+    ```console
+    $ plutil -extract CFBundleIdentifier raw -o - ~/Library/Developer/Toolchains/swift-latest.xctoolchain/Info.plist
+    org.swift.59202312211a
+    ```
 
-2. In case you have both local as well as globally installed toolchains, you can use a single command to determine the identifier of the latest toolchain(s):
+  @Image(source: "swift-toolchain-version", alt: "A screenshot of a Terminal application showing the result of the plutil command.")
 
-```console
-$ find ~/Library/Developer/Toolchains /Library/Developer/Toolchains -name "swift-latest.xctoolchain" -depth 1 -exec plutil -extract CFBundleIdentifier raw -o - {}/Info.plist \; 2>/dev/null|sort
-```
+2. If you have both locally and globally installed toolchains, you can use a single command to determine the identifier of the latest toolchain(s):
 
-3. Set `TOOLCHAINS` as an environment variable when building with `make` or `swift build`. This will not work when building with a graphical editor.
+  ```console
+  $ find ~/Library/Developer/Toolchains /Library/Developer/Toolchains -name "swift-latest.xctoolchain" -depth 1 -exec plutil -extract CFBundleIdentifier raw -o - {}/Info.plist \; 2>/dev/null|sort
+  ```
 
-```console
-$ TOOLCHAINS=org.swift.59202403121a make
-```
+### Building with a Specific Toolchain
 
-```console
-$ TOOLCHAINS=org.swift.59202312211a swift build -c release
-```
+- Option 1: Set `TOOLCHAINS` as an environment variable to your toolchain's identifier. This only works when building with `make` or `swift build` and will not work when building with a graphical editor.
 
-> Note: You can alternatively specify your toolchain name in the `Examples/swift.mk` file. Edit `swift.mk` in the `Examples` directory to set `TOOLCHAINS := "<your Swift nightly toolchain name>"` before the `TOOLCHAINS` check. The following example diff uses the name `"org.swift.59202312211a"`.
->
->```diff
->diff --git a/Examples/swift.mk b/Examples/swift.mk
->index 065f0e9..cc96ab3 100644
->--- a/Examples/swift.mk
->+++ b/Examples/swift.mk
->@@ -1,5 +1,6 @@
->HEAP_SIZE      = 8388208
->STACK_SIZE     = 61800
->+TOOLCHAINS := "org.swift.59202312211a"
->```
+  ```console
+  $ TOOLCHAINS=org.swift.59202403121a make
+  ```
+
+  ```console
+  $ TOOLCHAINS=org.swift.59202312211a swift build -c release
+  ```
+
+- Option 2: For make based builds only, you can alternatively specify your toolchain name in the `Examples/swift.mk` file.
+
+  Edit `swift.mk` in the `Examples` directory to set `TOOLCHAINS := "<your toolchain's identifier>"` before the `TOOLCHAINS` check. The following example diff uses the identifier `"org.swift.59202312211a"`.
+
+  ```diff
+  diff --git a/Examples/swift.mk b/Examples/swift.mk
+  index 065f0e9..cc96ab3 100644
+  --- a/Examples/swift.mk
+  +++ b/Examples/swift.mk
+  @@ -1,5 +1,6 @@
+   HEAP_SIZE     = 8388208
+   STACK_SIZE    = 61800
+  +TOOLCHAINS   := "org.swift.59202312211a"
+  ```
