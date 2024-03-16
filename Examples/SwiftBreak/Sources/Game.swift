@@ -7,7 +7,7 @@ enum State {
   case gameOver
 }
 
-struct Sprites {
+struct Sprites: ~Copyable {
   var splash: Sprite
   var paused: Sprite
   var ball: Sprite
@@ -22,7 +22,7 @@ struct ActiveGame {
   var bricksRemaining: Int
 }
 
-struct Game {
+struct Game: ~Copyable {
   var state: State
   var sprites: Sprites
 
