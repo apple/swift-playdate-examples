@@ -1,6 +1,12 @@
+#if swift(>=6.0)
+public import Playdate
+#else
 import Playdate
+#endif
 
-var game: Game!
+// Opt out of static concurrency checking. We know that the playdate runtime is
+// single threaded and this global will never be concurrently accessed.
+nonisolated(unsafe) var game = Game()
 
 @_cdecl("update")
 func update(pointer: UnsafeMutableRawPointer?) -> Int32 {
@@ -14,9 +20,8 @@ public func eventHandler(
   event: PDSystemEvent,
   arg: UInt32
 ) -> Int32 {
-  playdate = pointer.bindMemory(to: PlaydateAPI.self, capacity: 1)
+  initializePlaydateAPI(with: pointer)
   if event == .initialize {
-    game = Game()
     System.setUpdateCallback(update: update, userdata: nil)
   }
   return 0
