@@ -217,3 +217,28 @@ extension Graphics {
     graphicsAPI.fillPolygon.unsafelyUnwrapped(nPoints, points, color, fillRule)
   }
 }
+
+// MARK: - Miscellaneous
+extension Graphics {
+  /// Returns the current display frame buffer. Rows are 32-bit aligned, so the
+  /// row stride is 52 bytes, with the extra 2 bytes per row ignored. Bytes are
+  /// MSB-ordered; i.e., the pixel in column 0 is the 0x80 bit of the first byte
+  /// of the row.
+  public static func getFrame() -> UnsafeMutablePointer<UInt8>? {
+    graphicsAPI.getFrame.unsafelyUnwrapped()
+  }
+
+  /// Returns the raw bits in the display buffer, the last completed frame.
+  public static func getDisplayFrame() -> UnsafeMutablePointer<UInt8>? {
+    graphicsAPI.getDisplayFrame.unsafelyUnwrapped()
+  }
+
+  /// After updating pixels in the buffer returned by getFrame(), you must tell
+  /// the graphics system which rows were updated. This function marks a
+  /// contiguous range of rows as updated (e.g., `markUpdatedRows(0,LCD_ROWS-1`)
+  /// tells the system to update the entire display). Both “start” and “end” are
+  /// included in the range.
+  public static func markUpdatedRows(start: Int32, end: Int32) {
+    graphicsAPI.markUpdatedRows.unsafelyUnwrapped(start, end)
+  }
+}

@@ -1,9 +1,83 @@
-public import CPlaydate
+//===----------------------------------------------------------------------===//
+//
+// This source file is part of the Swift open source project
+//
+// Copyright (c) 2024 Apple Inc. and the Swift project authors.
+// Licensed under Apache License v2.0 with Runtime Library Exception
+//
+// See https://swift.org/LICENSE.txt for license information
+//
+//===----------------------------------------------------------------------===//
+//
+// Game of Life
+//
+// Rules:
+// - Any live cell with fewer than two live neighbors dies, as if caused by
+//   under-population.
+// - Any live cell with two or three live neighbors lives on to the next
+//   generation.
+// - Any live cell with more than three live neighbors dies, as if by
+//   overcrowding.
+// - Any dead cell with exactly three live neighbors becomes a live cell, as if
+//   by reproduction.
+//
+//===----------------------------------------------------------------------===//
+
+public import Playdate
 
 infix operator %% : MultiplicationPrecedence
+
 func %% (lhs: Int32, rhs: Int32) -> Int32 {
   let rem = lhs % rhs
   return rem >= 0 ? rem : rem + rhs
+}
+
+/// The "main" entry point for playdate games.
+@_cdecl("eventHandler")
+public func eventHandler(
+  pointer: UnsafeMutableRawPointer!,
+  event: PDSystemEvent,
+  arg: UInt32
+) -> Int32 {
+  if event == .initialize {
+    // Setup the Playdate API, this is required for functions like:
+    // `Display.setRefreshRate(rate: 0)` to call into the correct Playdate
+    // runtime function
+    initializePlaydateAPI(with: pointer)
+
+    // Configure the display to run as fast as our game can run (on the Playdate
+    // simulator)
+    Display.setRefreshRate(rate: 0)
+
+    // Setup the `update` function below as the function to call on each game
+    // runloop tick.
+    System.setUpdateCallback(update: update, userdata: nil)
+
+    // Set the initial frame to a random state.
+    Frame.current.randomize()
+  }
+  return 0
+}
+
+/// The update function called on each runloop tick.
+@_cdecl("update")
+func update(pointer: UnsafeMutableRawPointer!) -> Int32 {
+  let frameNext = Frame.next
+  let frameCurrent = Frame.current
+
+  // If the user presses "A" then randomize the screen.
+  if System.buttonState.pushed == .a {
+    frameCurrent.randomize()
+  }
+
+  // Update the next frame based on the current frame.
+  frameNext.update(frameCurrent: frameCurrent)
+
+  // Tell the Playdate runtime that we updated the frame buffer, so the runtime
+  // knows to display the frame buffer on the screen.
+  Graphics.markUpdatedRows(start: 0, end: Frame.rows)
+
+  return 1
 }
 
 /// Playdate Frame
@@ -21,16 +95,27 @@ func %% (lhs: Int32, rhs: Int32) -> Int32 {
 /// ╰──────────────────────────────────────────────────────────────────╯
 /// (column: 0, row: LCD_ROWS)      (column: LCD_COLUMNS, row: LCD_ROWS)
 /// ```
-///
-/// 1 -> white -> dead
-/// 0 -> black -> alive
 struct Frame {
   static let rows = LCD_ROWS
   static let rowSize = LCD_ROWSIZE
   static let columns = LCD_COLUMNS
 
+  /// The frame currently on screen.
+  static var current: Self { Frame(buffer: Graphics.getDisplayFrame()!) }
+  
+  /// The frame to be displayed on the screen on the next update.
+  static var next: Self { Frame(buffer: Graphics.getFrame()!) }
+
+  /// The raw memory backing this frame, owned by the Playdate runtime.
   var buffer: UnsafeMutablePointer<UInt8>
 
+  /// Returns a typed object representing a single row of the frame.
+  subscript(row: Int32) -> Row {
+    let index = Int(row * Self.rowSize)
+    return Row(buffer: self.buffer.advanced(by: index))
+  }
+
+  /// Sets each pixel of the frame to a random value.
   func randomize() {
     for row in 0..<Self.rows {
       for column in 0..<(Self.columns / 8) {
@@ -40,154 +125,105 @@ struct Frame {
     }
   }
 
-  func row(_ row: Int32) -> Row {
-    let row = row %% Self.rows
-    let index = Int(row * Self.rowSize)
-    return Row(buffer: self.buffer.advanced(by: index))
+  /// Updates each pixel of this frame based on the values in the previous
+  /// frame.
+  @inline(__always)
+  func update(frameCurrent: Frame) {
+    var rowAbove = frameCurrent[Frame.rows - 1]
+    var rowCurrent = frameCurrent[0]
+    var rowBelow = frameCurrent[1]
+
+    for row in 0..<Frame.rows {
+      self[row].update(
+        rowAbove: rowAbove,
+        rowCurrent: rowCurrent,
+        rowBelow: rowBelow)
+      rowAbove = rowCurrent
+      rowCurrent = rowBelow
+      rowBelow = frameCurrent[(row + 2) %% Frame.rows]
+    }
   }
 }
 
+/// A single line of a frame buffer.
 struct Row {
+  /// The raw memory backing this row, owned by the Playdate runtime.
   var buffer: UnsafeMutablePointer<UInt8>
 
-  func sum(at column: Int32) -> UInt8 {
-    self.middleSum(at: column) + self.value(at: column)
+  /// Convenience API for reading or mutating a byte (8 pixels) of the row.
+  subscript(column: Int) -> UInt8 {
+    get { self.buffer[column] }
+    nonmutating set { self.buffer[column] = newValue }
   }
 
-  func middleSum(at column: Int32) -> UInt8 {
-    let lower = (column - 1) %% Frame.columns
-    let upper = (column + 1) %% Frame.columns
-    return self.value(at: lower) + self.value(at: upper)
+  // Returns the sum of the 3 pixels centered around the requested column.
+  func sum(at column: Int32) -> Int32 {
+    if column == 0 {
+      return self.value(at: Frame.columns - 1)
+        + self.value(at: column)
+        + self.value(at: column + 1)
+    } else if column < Frame.columns - 1 {
+      return self.value(at: column - 1)
+        + self.value(at: column)
+        + self.value(at: column + 1)
+    } else {
+      return self.value(at: column - 1)
+        + self.value(at: column)
+        + self.value(at: 0)
+    }
   }
 
-  func value(at column: Int32) -> UInt8 {
+  // Returns the sum of the 2 pixels to the left and right of the requested
+  // column.
+  func middleSum(at column: Int32) -> Int32 {
+    if column == 0 {
+      return self.value(at: Frame.columns - 1) + self.value(at: column + 1)
+    } else if column < Frame.columns - 1 {
+      return self.value(at: column - 1) + self.value(at: column + 1)
+    } else {
+      return self.value(at: column - 1) + self.value(at: 0)
+    }
+  }
+
+  /// Returns the value of the pixel at the requested column.
+  func value(at column: Int32) -> Int32 {
     self.isOn(at: column) ? 1 : 0
   }
 
+  /// Returns `true` if the pixel at the requested column is "alive".
+  ///
+  /// Alive cell are represented by a 0 bit and dead cells a 1.
   func isOn(at column: Int32) -> Bool {
     let byte = self.buffer[Int(column / 8)]
     let bitPosition: UInt8 = 0x80 >> (column % 8)
     return (byte & bitPosition) == 0
   }
-}
 
-/// Game of Life
-///
-/// Rules:
-/// - Any live cell with fewer than two live neighbors dies, as if caused by
-///   under-population.
-/// - Any live cell with two or three live neighbors lives on to the next
-///   generation.
-/// - Any live cell with more than three live neighbors dies, as if by
-///   overcrowding.
-/// - Any dead cell with exactly three live neighbors becomes a live cell, as if
-///   by reproduction.
-struct Game {
-  var playdate: UnsafeMutablePointer<PlaydateAPI>
-
-  func start() {
-    playdate.pointee.display.pointee.setRefreshRate!(0)
-
-    if let buffer = playdate.pointee.graphics.pointee.getDisplayFrame() {
-      Frame(buffer: buffer).randomize()
-    }
-
-    // Note: If you set an update callback in the initialize handler, the
-    // system assumes the game is pure C and doesn't run any Lua code in the
-    // game.
-    let pointer = UnsafeMutableRawPointer(playdate)
-    playdate.pointee.system.pointee.setUpdateCallback(update, pointer)
-  }
-
-  func updateGame() {
-    guard
-      // working buffer
-      let newBuffer = playdate.pointee.graphics.pointee.getFrame(),
-      // buffer currently on screen (or headed there, anyway)
-      let oldBuffer = playdate.pointee.graphics.pointee.getDisplayFrame()
-    else {
-      return
-    }
-
-    let newFrame = Frame(buffer: newBuffer)
-    let oldFrame = Frame(buffer: oldBuffer)
-
-    var pushed = PDButtons(rawValue: 0)
-    playdate.pointee.system.pointee.getButtonState(nil, &pushed, nil)
-
-    if pushed == .a {
-      newFrame.randomize()
-    } else {
-      self.updateFrame(newFrame: newFrame, oldFrame: oldFrame)
-    }
-
-    // We twiddled the frame buffer bits directly, so we have to tell the
-    // system about it.
-    playdate.pointee.graphics.pointee.markUpdatedRows(0, Frame.rows - 1)
-  }
-
-  func updateFrame(newFrame: Frame, oldFrame: Frame) {
-    var above = oldFrame.row(-1)
-    var input = oldFrame.row(0)
-    var below = oldFrame.row(1)
-
-    for row in 0..<Frame.rows {
-      self.updateRow(
-        above: above,
-        input: input,
-        below: below,
-        output: newFrame.row(row))
-
-      above = input
-      input = below
-      below = oldFrame.row(row + 2)
-    }
-  }
-
-  func updateRow(above: Row, input: Row, below: Row, output: Row) {
+  /// Updates each pixel of this row based on the values of rows surrounding
+  /// this row in the previous frame.
+  @inline(__always)
+  func update(rowAbove: Row, rowCurrent: Row, rowBelow: Row) {
     var byte: UInt8 = 0
     var bitPosition: UInt8 = 0x80
-
     for column in 0..<Frame.columns {
       // If total is 3 cell is alive
       // If total is 4, no change
       // Else, cell is dead
-      let sum =
-        above.sum(at: column)
-        + input.middleSum(at: column)
-        + below.sum(at: column)
+      let sum = rowAbove.sum(at: column)
+        + rowCurrent.middleSum(at: column)
+        + rowBelow.sum(at: column)
 
-      if sum == 3 || (input.isOn(at: column) && sum == 2) {
+      if sum == 3 || (rowCurrent.isOn(at: column) && sum == 2) {
         byte |= bitPosition
       }
 
       bitPosition >>= 1
 
       if bitPosition == 0 {
-        output.buffer[Int(column / 8)] = ~byte
+        self[Int(column / 8)] = ~byte
         byte = 0
         bitPosition = 0x80
       }
     }
   }
-}
-
-@_cdecl("update")
-func update(pointer: UnsafeMutableRawPointer!) -> Int32 {
-  let playdate = pointer.bindMemory(to: PlaydateAPI.self, capacity: 1)
-  Game(playdate: playdate).updateGame()
-  return 1
-}
-
-@_cdecl("eventHandler")
-public func eventHandler(
-  pointer: UnsafeMutableRawPointer!,
-  event: PDSystemEvent,
-  arg: UInt32
-) -> Int32 {
-  let playdate = pointer.bindMemory(to: PlaydateAPI.self, capacity: 1)
-  if event == .initialize {
-    Game(playdate: playdate).start()
-  }
-  return 0
 }
