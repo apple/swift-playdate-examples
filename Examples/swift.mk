@@ -41,6 +41,7 @@ SWIFT_FLAGS := \
 	$(addprefix -Xcc , $(C_FLAGS)) \
 	-O \
 	-wmo -enable-experimental-feature Embedded \
+	-enable-experimental-feature NoncopyableGenerics \
 	-Xfrontend -disable-stack-protector \
 	-Xfrontend -function-sections \
 	-swift-version 6 \

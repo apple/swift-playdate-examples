@@ -7,13 +7,13 @@ enum State {
   case gameOver
 }
 
-struct Sprites {
+struct Sprites: ~Copyable {
   var splash: Sprite
   var paused: Sprite
   var ball: Sprite
   var paddle: Sprite
   var gameOver: Sprite
-  var bricks: [Sprite]
+  var bricks: FixedArray<Sprite>
 }
 
 struct ActiveGame {
@@ -22,7 +22,7 @@ struct ActiveGame {
   var bricksRemaining: Int
 }
 
-struct Game {
+struct Game: ~Copyable {
   var state: State
   var sprites: Sprites
 
@@ -38,6 +38,7 @@ struct Game {
     // Start in loading state with 4 x 10 bricks.
     let brick = Sprite.brick()
     let splash = Sprite.splash()
+    splash.addSprite()
     self.sprites =
       .init(
         splash: splash,
@@ -45,8 +46,7 @@ struct Game {
         ball: .ball(),
         paddle: .paddle(),
         gameOver: .gameOver(),
-        bricks: (0..<40).map { index in index == 0 ? brick : brick.copy() })
-    splash.addSprite()
+        bricks: .init(count: 40, first: brick) { $0.copy() })
     Sprite.drawSprites()
     self.state = .loading
   }
@@ -125,7 +125,7 @@ extension Game {
 
     let brickWidth = 40
     let brickHeight = 24
-    for (index, brick) in sprites.bricks.enumerated() {
+    sprites.bricks.enumerated { index, brick in
       let x = (index % 10)
       let y = (index / 10)
       brick.moveTo(
@@ -154,7 +154,7 @@ extension Game {
   mutating func gameOver() {
     self.sprites.ball.removeSprite()
     self.sprites.paddle.removeSprite()
-    for brick in sprites.bricks {
+    self.sprites.bricks.forEach { brick in
       brick.removeSprite()
     }
     self.sprites.gameOver.moveTo(

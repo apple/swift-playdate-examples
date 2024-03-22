@@ -15,35 +15,29 @@ public typealias LCDSpriteCollisionFilterProc = @convention(c) (OpaquePointer?, 
 
 /// A sprite is a graphics object that can be used to represent moving entities
 /// in your programs.
-public enum Sprite {
-  case owned(OwnedBox)
-  case borrowed(OpaquePointer)
-
-  /// Retrieve the underlying sprite pointer.
-  var pointer: OpaquePointer {
-    switch self {
-    case .owned(let box): box.pointer
-    case .borrowed(let pointer): pointer
-    }
-  }
+public struct Sprite: ~Copyable {
+  var owned: Bool
+  let pointer: OpaquePointer
 
   /// Allocates and returns a new sprite, which will be owned by this instance
   /// and freed when the last copy goes away.
   public init() {
-    let newSprite = spriteAPI.newSprite.unsafelyUnwrapped()!
-    self = .owned(OwnedBox(pointer: newSprite))
+    self.pointer = spriteAPI.newSprite.unsafelyUnwrapped()!
+    self.owned = true
   }
 
   /// Create a Sprite wrapper around an existing sprite pointer, taking
   /// ownership over that sprite pointer.
   public init(owning pointer: OpaquePointer) {
-    self = .owned(OwnedBox(pointer: pointer))
+    self.pointer = pointer
+    self.owned = true
   }
 
   /// Create a Sprite wrapper around an existing sprite pointer, borrowing that
   /// sprite without taking ownership of it.
   public init(borrowing pointer: OpaquePointer) {
-    self = .borrowed(pointer)
+    self.pointer = pointer
+    self.owned = false
   }
 
   /// "Forget" this sprite instance, relinquishing ownership of it so that it
@@ -52,32 +46,12 @@ public enum Sprite {
   /// they will persist for the life of the game or because the user wants to
   /// explicitly free them at some other point.
   public mutating func forget() {
-    switch self {
-    case .owned(let box):
-      box.owned = false
-      self = .init(borrowing: box.pointer)
-
-    case .borrowed:
-      break
-    }
+    self.owned = false
   }
-}
 
-extension Sprite {
-  /// Manage the lifetime of the given sprite
-  public class OwnedBox {
-    var pointer: OpaquePointer
-    var owned: Bool
-
-    public init(pointer: OpaquePointer) {
-      self.pointer = pointer
-      self.owned = true
-    }
-
-    deinit {
-      if owned {
-        spriteAPI.freeSprite(self.pointer)
-      }
+  deinit {
+    if owned {
+      spriteAPI.freeSprite(self.pointer)
     }
   }
 }
