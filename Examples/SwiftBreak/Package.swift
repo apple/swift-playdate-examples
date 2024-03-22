@@ -10,6 +10,7 @@ guard let home = Context.environment["HOME"] else {
 
 let swiftSettingsSimulator: [SwiftSetting] = [
   .enableExperimentalFeature("Embedded"),
+  .enableExperimentalFeature("NoncopyableGenerics"),
   .unsafeFlags([
     "-Xfrontend", "-disable-objc-interop",
     "-Xfrontend", "-disable-stack-protector",
