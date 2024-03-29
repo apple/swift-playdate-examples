@@ -10,7 +10,9 @@ nonisolated(unsafe) var game = Game()
 
 @_cdecl("update")
 func update(pointer: UnsafeMutableRawPointer?) -> Int32 {
-  game.updateGame()
+  if game.updateGame() {
+    Sprite.updateAndDrawSprites()
+  }
   return 1
 }
 

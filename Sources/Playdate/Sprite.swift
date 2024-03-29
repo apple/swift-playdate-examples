@@ -361,7 +361,11 @@ extension Sprite {
 
     let rawCollisions = spriteAPI.checkCollisions.unsafelyUnwrapped(self.pointer, goalX, goalY, &actualX, &actualY, &count)
     let collisions = UnsafeBufferPointer(start: rawCollisions, count: Int(count))
-    defer { rawCollisions?.deallocate() }
+    defer {
+      if let rawCollisions {
+        System.free(pointer: rawCollisions)
+      }
+    }
     return body(actualX, actualY, collisions)
   }
 
@@ -397,7 +401,7 @@ extension Sprite {
 
     let rawCollisions = spriteAPI.moveWithCollisions.unsafelyUnwrapped(self.pointer, goalX, goalY, &actualX, &actualY, &count)
     let collisions = UnsafeBufferPointer(start: rawCollisions, count: Int(count))
-    defer { rawCollisions?.deallocate() }
+    defer { rawCollisions.flatMap(System.free) }
     return body(actualX, actualY, collisions)
   }
 
@@ -407,7 +411,7 @@ extension Sprite {
     var count: Int32 = 0
     let rawSprites = spriteAPI.querySpritesAtPoint.unsafelyUnwrapped(x, y, &count)
     let sprites = UnsafeBufferPointer(start: rawSprites, count: Int(count))
-    defer { rawSprites?.deallocate() }
+    defer { rawSprites.flatMap(System.free) }
     return body(sprites)
   }
 
@@ -417,7 +421,7 @@ extension Sprite {
     var count: Int32 = 0
     let rawSprites = spriteAPI.querySpritesInRect.unsafelyUnwrapped(x, y, width, height, &count)
     let sprites = UnsafeBufferPointer(start: rawSprites, count: Int(count))
-    defer { rawSprites?.deallocate() }
+    defer { rawSprites.flatMap(System.free) }
     return body(sprites)
   }
 
@@ -427,7 +431,7 @@ extension Sprite {
     var count: Int32 = 0
     let rawSprites = spriteAPI.querySpritesAlongLine.unsafelyUnwrapped(x1, y1, x2, y2, &count)
     let sprites = UnsafeBufferPointer(start: rawSprites, count: Int(count))
-    defer { rawSprites?.deallocate() }
+    defer { rawSprites.flatMap(System.free) }
     return body(sprites)
   }
 
@@ -439,7 +443,7 @@ extension Sprite {
     var count: Int32 = 0
     let rawSprites = spriteAPI.querySpriteInfoAlongLine.unsafelyUnwrapped(x1, y1, x2, y2, &count)
     let sprites = UnsafeBufferPointer(start: rawSprites, count: Int(count))
-    defer { rawSprites?.deallocate() }
+    defer { rawSprites.flatMap(System.free) }
     return body(sprites)
   }
 
@@ -452,7 +456,7 @@ extension Sprite {
     var count: Int32 = 0
     let rawSprites = spriteAPI.allOverlappingSprites.unsafelyUnwrapped(&count)
     let sprites = UnsafeBufferPointer(start: rawSprites, count: Int(count))
-    defer { rawSprites?.deallocate() }
+    defer { rawSprites.flatMap(System.free) }
     return body(sprites)
   }
 }
