@@ -9,7 +9,7 @@ guard let home = Context.environment["HOME"] else {
 }
 
 let swiftSettingsSimulator: [SwiftSetting] = [
-  .enableExperimentalFeature("Embedded"),
+  // .enableExperimentalFeature("Embedded"),
   .unsafeFlags([
     "-g", "-Onone",
     "-Xfrontend", "-Onone",

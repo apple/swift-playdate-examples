@@ -9,13 +9,11 @@ guard let home = Context.environment["HOME"] else {
 }
 
 let swiftSettingsSimulator: [SwiftSetting] = [
-  .enableExperimentalFeature("Embedded"),
   .enableExperimentalFeature("NoncopyableGenerics"),
   .unsafeFlags([
-    "-g", "-Onone",
     "-Xfrontend", "-disable-objc-interop",
-    "-Xfrontend", "-disable-stack-protector",
-    "-Xfrontend", "-function-sections",
+    // "-Xfrontend", "-disable-stack-protector",
+    // "-Xfrontend", "-function-sections",
     // "-Xfrontend", "-gline-tables-only",
     "-Xcc", "-DTARGET_EXTENSION",
     "-Xcc", "-I", "-Xcc", "\(gccIncludePrefix)/include",
@@ -28,7 +26,7 @@ let swiftSettingsSimulator: [SwiftSetting] = [
 let package = Package(
   name: "SwiftBreak",
   products: [
-    .library(name: "SwiftBreak", type: .static, targets: ["SwiftBreak"]),
+    .library(name: "SwiftBreak", type: .dynamic, targets: ["SwiftBreak"]),
   ],
   dependencies: [
     .package(path: "../..")
@@ -38,7 +36,6 @@ let package = Package(
         name: "SwiftBreak",
         dependencies: [
             .product(name: "Playdate", package: "swift-playdate-examples"),
-            .product(name: "CPlaydate", package: "swift-playdate-examples"),
         ],
         path: "Sources",
         swiftSettings: swiftSettingsSimulator
