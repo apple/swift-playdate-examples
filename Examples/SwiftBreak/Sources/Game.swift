@@ -53,9 +53,10 @@ struct Game: ~Copyable {
 }
 
 extension Game {
-  mutating func updateGame() {
+  mutating func updateGame() -> Bool {
     let pushed = System.buttonState.pushed
-    switch self.state {
+    let state = self.state
+    switch state {
     case .loading:
       if pushed == .a {
         self.startNewGame()
@@ -89,8 +90,8 @@ extension Game {
         self.startNewGame()
       }
     }
-
-    Sprite.updateAndDrawSprites()
+      
+    return true
   }
 
   mutating func startNewGame() {
