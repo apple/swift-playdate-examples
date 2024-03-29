@@ -1,9 +1,0 @@
-#!/bin/sh
-# swift build -Xcc -c -Xswiftc -g -Xswiftc -Onone -c release --verbose
-swift build -c release --verbose
-clang -g -nostdlib -Wl,-exported_symbol,_eventHandlerShim -Wl,-exported_symbol,_eventHandler \
--dynamiclib -rdynamic -lm \
-.build/release/libPlaydate.a .build/release/libSwiftBreak.a .build/release/libCPlaydate.a \
--o build/pdex.dylib
-cp build/pdex.dylib Source
-${HOME}/Developer/PlaydateSDK/bin/pdc Source SwiftBreak.pdx
