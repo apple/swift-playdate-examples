@@ -151,4 +151,16 @@ extension System {
   public static func clearICache() {
     systemAPI.clearICache.unsafelyUnwrapped()
   }
+  
+  /// Reallocates a pointer.
+  /// If `pointer == nil`, and `size > 0`, allocates a new pointer.
+  /// If `pointer != nil` and `size == 0` deallocates the pointer.
+  public static func realloc(pointer: UnsafeMutableRawPointer?, size: size_t) -> UnsafeMutableRawPointer? {
+    systemAPI.realloc.unsafelyUnwrapped(pointer, size)
+  }
+
+  /// Frees a pointer previously allocated with `realloc()`.
+  public static func free<T>(pointer: UnsafeMutablePointer<T>) {
+    let _ = systemAPI.realloc.unsafelyUnwrapped(pointer, 0)
+  }
 }
