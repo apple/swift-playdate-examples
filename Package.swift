@@ -11,10 +11,12 @@ guard let home = Context.environment["HOME"] else {
 let swiftSettingsSimulator: [SwiftSetting] = [
   .enableExperimentalFeature("Embedded"),
   .unsafeFlags([
+    "-g", "-Onone",
+    "-Xfrontend", "-Onone",
     "-Xfrontend", "-disable-objc-interop",
     "-Xfrontend", "-disable-stack-protector",
     "-Xfrontend", "-function-sections",
-    "-Xfrontend", "-gline-tables-only",
+    // "-Xfrontend", "-gline-tables-only",
     "-Xcc", "-DTARGET_EXTENSION",
     "-Xcc", "-I", "-Xcc", "\(gccIncludePrefix)/include",
     "-Xcc", "-I", "-Xcc", "\(gccIncludePrefix)/include-fixed",
@@ -26,6 +28,7 @@ let swiftSettingsSimulator: [SwiftSetting] = [
 let cSettingsSimulator: [CSetting] = [
   .unsafeFlags([
     "-DTARGET_EXTENSION",
+    "-nostdlib",
     "-I", "\(gccIncludePrefix)/include",
     "-I", "\(gccIncludePrefix)/include-fixed",
     "-I", "\(gccIncludePrefix)/../../../../arm-none-eabi/include",
@@ -36,8 +39,8 @@ let cSettingsSimulator: [CSetting] = [
 let package = Package(
   name: "swift-playdate-examples",
   products: [
-    .library(name: "Playdate", targets: ["Playdate"]),
-    .library(name: "CPlaydate", targets: ["CPlaydate"]),
+    .library(name: "Playdate", type: .static, targets: ["Playdate"]),
+    .library(name: "CPlaydate", type: .static, targets: ["CPlaydate"]),
   ],
   targets: [
     .target(

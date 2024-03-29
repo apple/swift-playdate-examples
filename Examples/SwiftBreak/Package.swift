@@ -12,10 +12,11 @@ let swiftSettingsSimulator: [SwiftSetting] = [
   .enableExperimentalFeature("Embedded"),
   .enableExperimentalFeature("NoncopyableGenerics"),
   .unsafeFlags([
+    "-g", "-Onone",
     "-Xfrontend", "-disable-objc-interop",
     "-Xfrontend", "-disable-stack-protector",
     "-Xfrontend", "-function-sections",
-    "-Xfrontend", "-gline-tables-only",
+    // "-Xfrontend", "-gline-tables-only",
     "-Xcc", "-DTARGET_EXTENSION",
     "-Xcc", "-I", "-Xcc", "\(gccIncludePrefix)/include",
     "-Xcc", "-I", "-Xcc", "\(gccIncludePrefix)/include-fixed",
@@ -27,17 +28,20 @@ let swiftSettingsSimulator: [SwiftSetting] = [
 let package = Package(
   name: "SwiftBreak",
   products: [
-    .library(name: "SwiftBreak", targets: ["SwiftBreak"])
+    .library(name: "SwiftBreak", type: .static, targets: ["SwiftBreak"]),
   ],
   dependencies: [
     .package(path: "../..")
   ],
   targets: [
     .target(
-      name: "SwiftBreak",
-      dependencies: [
-        .product(name: "Playdate", package: "swift-playdate-examples")
-      ],
-      swiftSettings: swiftSettingsSimulator)
+        name: "SwiftBreak",
+        dependencies: [
+            .product(name: "Playdate", package: "swift-playdate-examples"),
+            .product(name: "CPlaydate", package: "swift-playdate-examples"),
+        ],
+        path: "Sources",
+        swiftSettings: swiftSettingsSimulator
+    )
   ],
   swiftLanguageVersions: [.version("6"), .v5])
