@@ -1,4 +1,4 @@
-public import CPlaydate
+import CPlaydate
 
 /// Access to the Playdate sprite API.
 var spriteAPI: playdate_sprite { playdateAPI.sprite.unsafelyUnwrapped.pointee }

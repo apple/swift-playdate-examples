@@ -25,6 +25,9 @@ let swiftSettingsSimulator: [SwiftSetting] = [
 
 let package = Package(
   name: "{{Game Name}}",
+  platforms: [
+    .macOS(.v14)
+  ],
   products: [
     .library(name: "{{Game Name}}", targets: ["{{Game Name}}"])
   ],

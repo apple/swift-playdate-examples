@@ -25,6 +25,9 @@ let swiftSettingsSimulator: [SwiftSetting] = [
 
 let package = Package(
   name: "Life",
+  platforms: [
+    .macOS(.v14)
+  ],
   products: [
     .library(name: "Life", targets: ["Life"])
   ],
