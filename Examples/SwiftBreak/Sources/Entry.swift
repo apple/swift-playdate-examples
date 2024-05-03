@@ -22,7 +22,7 @@ public func eventHandler(
 ) -> Int32 {
   initializePlaydateAPI(with: pointer)
   if event == .initialize {
-    System.setUpdateCallback(update: update, userdata: nil)
+    System.setUpdateCallback(update: { pointer in update(pointer: pointer) }, userdata: nil)
   }
   return 0
 }
