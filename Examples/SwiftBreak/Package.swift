@@ -26,6 +26,9 @@ let swiftSettingsSimulator: [SwiftSetting] = [
 
 let package = Package(
   name: "SwiftBreak",
+  platforms: [
+    .macOS(.v14)
+  ],
   products: [
     .library(name: "SwiftBreak", targets: ["SwiftBreak"])
   ],

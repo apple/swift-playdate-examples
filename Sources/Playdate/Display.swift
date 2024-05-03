@@ -1,8 +1,4 @@
-#if swift(>=6.0)
 import CPlaydate
-#else
-public import CPlaydate
-#endif
 
 var displayAPI: playdate_display { playdateAPI.display.unsafelyUnwrapped.pointee }
 

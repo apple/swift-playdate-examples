@@ -51,7 +51,7 @@ public func eventHandler(
 
     // Setup the `update` function below as the function to call on each game
     // runloop tick.
-    System.setUpdateCallback(update: update, userdata: nil)
+    System.setUpdateCallback(update: { update(pointer: $0) }, userdata: nil)
 
     // Set the initial frame to a random state.
     Frame.current.randomize()
@@ -60,7 +60,6 @@ public func eventHandler(
 }
 
 /// The update function called on each runloop tick.
-@_cdecl("update")
 func update(pointer: UnsafeMutableRawPointer!) -> Int32 {
   let frameNext = Frame.next
   let frameCurrent = Frame.current
@@ -102,7 +101,7 @@ struct Frame {
 
   /// The frame currently on screen.
   static var current: Self { Frame(buffer: Graphics.getDisplayFrame()!) }
-  
+
   /// The frame to be displayed on the screen on the next update.
   static var next: Self { Frame(buffer: Graphics.getFrame()!) }
 
@@ -209,7 +208,8 @@ struct Row {
       // If total is 3 cell is alive
       // If total is 4, no change
       // Else, cell is dead
-      let sum = rowAbove.sum(at: column)
+      let sum =
+        rowAbove.sum(at: column)
         + rowCurrent.middleSum(at: column)
         + rowBelow.sum(at: column)
 

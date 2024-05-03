@@ -1,4 +1,4 @@
-public import CPlaydate
+import CPlaydate
 
 private var systemAPI: playdate_sys { playdateAPI.system.unsafelyUnwrapped.pointee }
 

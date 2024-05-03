@@ -1,7 +1,7 @@
 @_documentation(visibility: internal)
 @_exported
 @preconcurrency
-public import CPlaydate
+import CPlaydate
 
 #if !compiler(>=6.0)
 #error("Please use a Swift 6.0 compiler or later")

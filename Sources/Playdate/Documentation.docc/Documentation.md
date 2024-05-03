@@ -16,7 +16,7 @@ Embedded Swift solves this problem by pairing high-level ergonomics with low-lev
 
 ## Get Started
 
-To build and run the Swift Playdate examples included in this repository, you'll need some additional tools. Specifically, you need a recent Swift nightly toolchain (built on 3/7/24 or later) and a copy of the Playdate SDK. For instructions on setting up your development environment, see <doc:DownloadingTheTools>.
+To build and run the Swift Playdate examples included in this repository, you'll need some additional tools. Specifically, you need a recent Swift nightly toolchain (built on 5/1/24 or later) and a copy of the Playdate SDK. For instructions on setting up your development environment, see <doc:DownloadingTheTools>.
 
 The examples in this repository can be built using various build systems and IDEs for both the simulator and device. See <doc:BuildingTheExamples> for detailed instructions. See <doc:ExploringTheExamples> for descriptions and videos of the examples.
 
