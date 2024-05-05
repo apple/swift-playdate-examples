@@ -2,6 +2,10 @@
 
 A technical demonstration of Embedded Swift running on Playdate by Panic
 
+| **CI Status** |
+|---|
+|[![SwiftPM Build](https://github.com/apple/swift-playdate-examples/actions/workflows/swiftpm.yml/badge.svg)](https://github.com/apple/swift-playdate-examples/actions/workflows/swiftpm.yml)|
+
 ## Why Swift for Playdate
 
 The [Playdate](https://play.date) is a tiny handheld gaming console developed by [Panic](https://panic.com) featuring a Cortex M7 processor and a 400 by 240 1-bit display. Panic provides an SDK for building Playdate games in both C and Lua and is equipped with a Playdate Simulator. 
