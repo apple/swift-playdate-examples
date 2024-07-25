@@ -2,10 +2,13 @@
 
 import PackageDescription
 
-let gccIncludePrefix =
-  "/usr/local/playdate/gcc-arm-none-eabi-9-2019-q4-major/lib/gcc/arm-none-eabi/9.2.1"
-guard let home = Context.environment["HOME"] else {
-  fatalError("could not determine home directory")
+// TODO: Give this variable a better name both for the code and the enviroment variable.
+guard let gccIncludePrefix = Context.environment["GCC_ARM_PLAYDATE_PATH"] else {
+  fatalError("Make sure you have the GCC_ARM_PLAYDATE_PATH variable defined.")
+}
+
+guard let playdate_sdk_path = Context.environment["PLAYDATE_SDK_PATH"] else {
+  fatalError("Make sure you have the PLAYDATE_SDK_PATH variable defined.")
 }
 
 let swiftSettingsSimulator: [SwiftSetting] = [
@@ -19,7 +22,7 @@ let swiftSettingsSimulator: [SwiftSetting] = [
     "-Xcc", "-I", "-Xcc", "\(gccIncludePrefix)/include",
     "-Xcc", "-I", "-Xcc", "\(gccIncludePrefix)/include-fixed",
     "-Xcc", "-I", "-Xcc", "\(gccIncludePrefix)/../../../../arm-none-eabi/include",
-    "-I", "\(home)/Developer/PlaydateSDK/C_API",
+    "-I", "\(playdate_sdk_path)/C_API",
   ]),
 ]
 
