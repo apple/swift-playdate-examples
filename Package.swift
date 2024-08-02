@@ -2,12 +2,11 @@
 
 import PackageDescription
 
-// TODO: Give this variable a better name both for the code and the enviroment variable.
-guard let gccIncludePrefix = Context.environment["GCC_ARM_PLAYDATE_PATH"] else {
-  fatalError("Make sure you have the GCC_ARM_PLAYDATE_PATH variable defined.")
+guard let gccIncludePrefix = Context.environment["GCC_ARM_INCLUDE_PREFIX_PATH"] else {
+  fatalError("Make sure you have the GCC_ARM_INCLUDE_PREFIX_PATH variable defined.")
 }
 
-guard let playdate_sdk_path = Context.environment["PLAYDATE_SDK_PATH"] else {
+guard let playdateSdkPath = Context.environment["PLAYDATE_SDK_PATH"] else {
   fatalError("Make sure you have the PLAYDATE_SDK_PATH variable defined.")
 }
 
@@ -22,7 +21,7 @@ let swiftSettingsSimulator: [SwiftSetting] = [
     "-Xcc", "-I", "-Xcc", "\(gccIncludePrefix)/include",
     "-Xcc", "-I", "-Xcc", "\(gccIncludePrefix)/include-fixed",
     "-Xcc", "-I", "-Xcc", "\(gccIncludePrefix)/../../../../arm-none-eabi/include",
-    "-I", "\(playdate_sdk_path)/C_API",
+    "-I", "\(playdateSdkPath)/C_API",
   ]),
 ]
 
@@ -32,7 +31,7 @@ let cSettingsSimulator: [CSetting] = [
     "-I", "\(gccIncludePrefix)/include",
     "-I", "\(gccIncludePrefix)/include-fixed",
     "-I", "\(gccIncludePrefix)/../../../../arm-none-eabi/include",
-    "-I", "\(playdate_sdk_path)/C_API",
+    "-I", "\(playdateSdkPath)/C_API",
   ])
 ]
 
