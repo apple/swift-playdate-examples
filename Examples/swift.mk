@@ -18,7 +18,6 @@ UNAME_S := $(shell uname -s)
 GCC_INCLUDE_PATHS := $(shell $(CC) -E -Wp,-v -xc /dev/null 2>&1 | egrep '^ ' | xargs echo )
 
 ifeq ($(UNAME_S),Linux)
-	# TODO: Maybe find this via environment variable or something.
 	SWIFT_EXEC := "swiftc"
 endif
 ifeq ($(UNAME_S),Darwin)
