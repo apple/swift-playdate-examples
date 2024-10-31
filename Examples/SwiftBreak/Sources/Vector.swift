@@ -1,8 +1,8 @@
 import Playdate
 
-typealias Vector = SIMD2<Float32>
+typealias Vec2 = SIMD2<Float32>
 
-extension Vector {
+extension Vec2 {
   init(_ collisionVector: CollisionVector) {
     self = .init(Float32(collisionVector.x), Float32(collisionVector.y))
   }
@@ -12,7 +12,7 @@ extension Vector {
   }
 }
 
-extension Vector {
+extension Vec2 {
   func reflected(along normal: Self) -> Self {
     self - (2 * (self • normal)) * normal
   }
@@ -22,7 +22,7 @@ extension Vector {
   }
 }
 
-extension Vector {
+extension Vec2 {
   func rotated(by theta: Float32) -> Self {
     .init(
       x: self.x * cosf(theta) + self.y * -sinf(theta),
@@ -35,7 +35,7 @@ extension Vector {
 }
 
 infix operator • : MultiplicationPrecedence
-extension Vector {
+extension Vec2 {
   static func • (lhs: Self, rhs: Self) -> Float {
     (lhs.x * rhs.x) + (lhs.y * rhs.y)
   }

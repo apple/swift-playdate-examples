@@ -42,8 +42,12 @@ SWIFT_FLAGS := \
 	-O \
 	-wmo -enable-experimental-feature Embedded \
 	-enable-experimental-feature NoncopyableGenerics \
+	-enable-experimental-feature ValueGenerics \
+	-enable-experimental-feature BuiltinModule \
 	-Xfrontend -disable-stack-protector \
 	-Xfrontend -function-sections \
+	-Xfrontend -disable-availability-checking \
+	-disable-experimental-parser-round-trip \
 	-swift-version 6 \
 	-Xcc -DTARGET_EXTENSION \
 	-module-cache-path build/module-cache \

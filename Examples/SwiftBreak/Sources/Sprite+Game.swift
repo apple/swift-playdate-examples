@@ -83,7 +83,7 @@ extension Sprite {
             activeGame.bricksRemaining -= 1
           }
 
-          var normal = Vector(collision.normal)
+          var normal = Vec2(collision.normal)
 
           if otherSprite.tag == .paddle {
             // compute placement of ball on paddle in domain -1 to 1.
