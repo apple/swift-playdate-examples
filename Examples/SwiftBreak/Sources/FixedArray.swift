@@ -1,35 +1,52 @@
-struct FixedArray<Element: ~Copyable>: ~Copyable {
-  let count: Int
-  private let _buffer: UnsafeMutablePointer<Element>
+import Builtin
 
-  init(count: Int, first: consuming Element, rest: (borrowing Element) -> Element) {
-    precondition(count > 0)
-    self.count = count
-    _buffer = .allocate(capacity: count)
-    for i in 1..<count {
-      (_buffer + i).initialize(to: rest(first))
-    }
-    _buffer.initialize(to: first)
-  }
-
-  deinit {
-    _buffer.deinitialize(count: count)
-    _buffer.deallocate()
-  }
+@frozen
+public struct Vector<let Count: Int, Element: ~Copyable>: ~Copyable {
+    private var storage: Builtin.FixedArray<Count, Element>
 }
 
-extension FixedArray where Element: ~Copyable {
-  func forEach(_ body: (borrowing Element) -> Void) {
-    for i in 0..<self.count {
-      body((self._buffer + i).pointee)
+extension Vector where Element: ~Copyable {
+    init(first: @autoclosure ()->Element, rest valueForIndex: (borrowing Element) -> Element) {
+        storage = Builtin.emplace { rawPointer in
+            let first = first()
+            let base = UnsafeMutablePointer<Element>(rawPointer)
+            for i in 1..<Count {
+                (base + i).initialize(to: valueForIndex(first))
+            }
+            base.initialize(to: first)
+        }
     }
-  }
-
-  func enumerated(_ body: (Int, borrowing Element) -> Void) {
-    var i = 0
-    self.forEach {
-      body(i, $0)
-      i += 1
-    }
-  }
 }
+
+extension Vector where Element: ~Copyable {
+    public subscript(i: Int) -> Element {
+        _read {
+            assert(i >= 0 && i < Count)
+            let rawPointer = Builtin.addressOfBorrow(self)
+            let base = UnsafePointer<Element>(rawPointer)
+            yield ((base + i).pointee)
+        }
+        
+        _modify {
+            assert(i >= 0 && i < Count)
+            let rawPointer = Builtin.addressof(&self)
+            let base = UnsafeMutablePointer<Element>(rawPointer)
+            yield (&(base + i).pointee)
+        }
+    }
+    
+    func forEach(_ body: (borrowing Element) -> Void) {
+      for i in 0..<Count {
+        body(self[i])
+      }
+    }
+
+    func enumerated(_ body: (Int, borrowing Element) -> Void) {
+      for i in 0..<Count {
+        body(i,self[i])
+      }
+    }
+    
+    var count: Int { Count }
+}
+

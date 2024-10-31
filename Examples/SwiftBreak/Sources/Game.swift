@@ -13,12 +13,12 @@ struct Sprites: ~Copyable {
   var ball: Sprite
   var paddle: Sprite
   var gameOver: Sprite
-  var bricks: FixedArray<Sprite>
+  var bricks: Vector<40,Sprite>
 }
 
 struct ActiveGame {
   var score: Int
-  var ballVelocity: Vector
+  var ballVelocity: Vec2
   var bricksRemaining: Int
 }
 
@@ -36,7 +36,6 @@ struct Game: ~Copyable {
     Sprite.setupWalls()
 
     // Start in loading state with 4 x 10 bricks.
-    let brick = Sprite.brick()
     let splash = Sprite.splash()
     splash.addSprite()
     self.sprites =
@@ -46,7 +45,7 @@ struct Game: ~Copyable {
         ball: .ball(),
         paddle: .paddle(),
         gameOver: .gameOver(),
-        bricks: .init(count: 40, first: brick) { $0.copy() })
+        bricks: .init(first: Sprite.brick()) { $0.copy() })
     Sprite.drawSprites()
     self.state = .loading
   }
