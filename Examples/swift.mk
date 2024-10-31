@@ -39,7 +39,7 @@ C_FLAGS := \
 
 SWIFT_FLAGS := \
 	$(addprefix -Xcc , $(C_FLAGS)) \
-	-O \
+	-Osize \
 	-wmo -enable-experimental-feature Embedded \
 	-enable-experimental-feature NoncopyableGenerics \
 	-Xfrontend -disable-stack-protector \
